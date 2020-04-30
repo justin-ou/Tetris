@@ -19,24 +19,54 @@ void TetrisController::resetBlock()
 	blockGridPosition.y = 0;
 }
 
-void TetrisController::onKeyPress(sf::Keyboard::Key keyCode, Board& board)
+bool TetrisController::onKeyPress(Board& board)
 {	
-	if (keyCode == sf::Keyboard::Key::Left)
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		blockGridPosition.x--;
-		update(board);
+		board.setTile(rand() % config::BOARD_ROW_COUNT, rand() % config::BOARD_COL_COUNT, sf::Color(rand() % 255, rand() % 255, rand() % 255, 255));
+		return true;
 	}
-	else if (keyCode == sf::Keyboard::Key::Right)
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
-		blockGridPosition.x++;
-		update(board);
+		board.resetBoard();
+		return true;
 	}
-	else if (keyCode == sf::Keyboard::Key::Down)
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+		moveBlockOnGrid(board, -1, 0);
+		return true;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	{
+		moveBlockOnGrid(board, 1, 0);
+		return true;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 	{
 		// TODO: Use a function pointer to board's function to check if moves are valid before commiting a move
-		blockGridPosition.y++;
-		update(board);
-	}	
+		moveBlockOnGrid(board, 0, 1);
+		return true;
+	}
+
+	return false;
+}
+
+void TetrisController::moveBlockOnGrid(Board& board, int deltaX, int deltaY)
+{
+	sf::Vector2i tempBlockPosition(blockGridPosition);
+	tempBlockPosition.x += deltaX;
+	tempBlockPosition.y += deltaY;
+
+	// Check position on grid
+	if (board.isBlockValid(tempBlockPosition, block))
+	{
+		blockGridPosition = tempBlockPosition;
+	}
+}
+
+void TetrisController::drawBlock(sf::RenderWindow& window)
+{
+	block.draw(window);
 }
 
 void TetrisController::update(Board& board)
@@ -45,14 +75,16 @@ void TetrisController::update(Board& board)
 	sf::Time elapsedTime = clock.getElapsedTime();
 	if (elapsedTime.asSeconds() >= config::BLOCK_FALL_DELAY)
 	{
-		blockGridPosition.y++;
+		moveBlockOnGrid(board, 0, 1);
 		clock.restart();
-	}	
+	}		
+
+	block.gridPosition = blockGridPosition;
 
 	// Check if grid position is at bottom	
 	// Write position of block on to board	
 	// If block has set,
 	// 1. Check if board has any full lines
-	// 2. Remove lines that are full and drop tiles from above ** WHAT DATA STRUCTURE TO USE TO CLEAR LINES?
+	// 2. Remove lines that are full and drop tiles from above
 	// 3. Get next block type 	
 }

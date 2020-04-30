@@ -23,21 +23,21 @@ class Board
 
 private:
 
-	// Const variables
-	const sf::Color DARKEN_COLOR = sf::Color(30, 30, 30, 0);
-
 	// Draw the board 
 	sf::Vector2f		boardPosition;
 	sf::RectangleShape	boardBg;
 	TileArray<Tile>		tileArr;
 	
+	bool isTileValid(size_t  row, size_t col);
+	bool isTileInBoard(size_t  row, size_t col);
 	void resetTile(Tile& tileReference);
 
 public:
 	Board();
 
+	sf::Vector2f getBoardPosition();
 	void resetBoard();
-	void setTile(int row, int col, const sf::Color& color);
+	void setTile(size_t row, size_t col, const sf::Color& color, bool isActive = true);
 	bool isBlockValid(sf::Vector2i& blockGridPosition, BlockData& block);
 	void draw(sf::RenderWindow& window);
 };

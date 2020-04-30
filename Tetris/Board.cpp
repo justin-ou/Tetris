@@ -33,6 +33,11 @@ Board::Board()
 	}
 }
 
+sf::Vector2f Board::getBoardPosition()
+{
+	return boardPosition;
+}
+
 void Board::resetBoard()
 {
 	for (auto row = 0; row < tileArr.size(); ++row)
@@ -62,30 +67,50 @@ void Board::draw(sf::RenderWindow& window)
 	}
 }
 
-void Board::setTile(int row, int col, const sf::Color& color)
+bool Board::isTileValid(size_t row, size_t col)
+{
+	if (!isTileInBoard(row, col)) return false;
+	return !tileArr[row][col].isActive;
+}
+
+bool Board::isTileInBoard(size_t row, size_t col)
 {
 	// Check array bounds
-	if (row < 0 || row >= config::BOARD_ROW_COUNT || col < 0 || col >= config::BOARD_COL_COUNT) return;
+	return row >= config::BOARD_ROW_COUNT || col >= config::BOARD_COL_COUNT;	
+}
+
+void Board::setTile(size_t row, size_t col, const sf::Color& color, bool isActive)
+{
+	if (!isTileInBoard(row, col)) return;
 
 	// Set the tile		
 	auto& tile = tileArr[row][col];
 	auto& tileShape = tile.tileShape;
 	tileShape.setFillColor(color);
-	tileShape.setOutlineColor(color - DARKEN_COLOR);
+	tileShape.setOutlineColor(color - BlockData::DARKEN_COLOR);
 	tileShape.setOutlineThickness(-2);
 
-	tile.isActive = true;
+	tile.isActive = isActive;
 }
 
 bool Board::isBlockValid(sf::Vector2i & blockGridPosition, BlockData & block)
 {
-	return false;
+	// Loop through the block data and check the row/col tile
+	auto& blockArray = block.getBlock();
+	for (auto row = 0; row < blockArray.size(); ++row)
+	{
+		for (auto col = 0; col < blockArray[row].size(); ++col)
+		{
+			if (blockArray[row][col])
+			{
+				if (!isTileValid(row + blockGridPosition.y, col + blockGridPosition.x)) return false;
+			}
+		}
+	}
+	return true;
 }
 
 void Board::resetTile(Tile & tileReference)
 {
-	tileReference.tileShape.setFillColor(sf::Color::Black);
-	tileReference.tileShape.setOutlineColor(sf::Color::Black);
-	tileReference.tileShape.setOutlineThickness(0);
 	tileReference.isActive = false;
 }

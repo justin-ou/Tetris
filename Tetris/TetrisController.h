@@ -8,23 +8,24 @@
 
 class TetrisController
 {
-private:
-	
+private:	
 	// Block movement
 	sf::Vector2i blockGridPosition;
 
 	// Timer
 	sf::Clock clock;
 
-	// Test
-	BlockData oBlock;
-
 public:
 	TetrisController();
 
+	// Test
+	BlockData block;
+
 	void reset();
 	void resetBlock();
-	void onKeyPress(sf::Keyboard::Key keyCode, Board& board);
+	bool onKeyPress(Board& board);
+	void moveBlockOnGrid(Board& board, int deltaX, int deltaY);
+	void drawBlock(sf::RenderWindow& window);
 	void update(Board& board);
 };
 
