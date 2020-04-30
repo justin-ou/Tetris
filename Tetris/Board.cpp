@@ -76,7 +76,7 @@ bool Board::isTileValid(size_t row, size_t col)
 bool Board::isTileInBoard(size_t row, size_t col)
 {
 	// Check array bounds
-	return row >= config::BOARD_ROW_COUNT || col >= config::BOARD_COL_COUNT;	
+	return row < config::BOARD_ROW_COUNT && col < config::BOARD_COL_COUNT;	
 }
 
 void Board::setTile(size_t row, size_t col, const sf::Color& color, bool isActive)
