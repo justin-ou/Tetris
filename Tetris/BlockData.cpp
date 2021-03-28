@@ -1,61 +1,35 @@
 #include "BlockData.h"
+#include <iostream>
 
-const sf::Color BlockData::DARKEN_COLOR = sf::Color(30, 30, 30, 0);
-
-BlockData::BlockData()
-{
-	color = sf::Color::Yellow;
-	
-	for (auto i = 0; i < block.size(); ++i)
-	{
-		for (auto j = 0; j < block[i].size(); ++j)
-		{
-			block[i][j] = true;
-		}
-	}
-
-	// 4 blocks
-	sf::RectangleShape block(sf::Vector2f(config::BLOCK_SIZE, config::BLOCK_SIZE));
-	block.setFillColor(color);
-	block.setOutlineColor(color - BlockData::DARKEN_COLOR);
-	block.setOutlineThickness(-2);
-	blockShape.push_back(block);
-	blockShape.push_back(block);
-	blockShape.push_back(block);
-	blockShape.push_back(block);
-
-	reset();
+BlockData::BlockData(array<int, config::BLOCK_DATA_LENGTH> blockConfig) :
+	block(move(blockConfig))
+{	
 }
 
-void BlockData::reset()
+void BlockData::setBlockArray(Orientation orientation, BlockArray<bool, config::BLOCK_DATA_LENGTH>& blockArray)
 {
-	gridPosition = sf::Vector2i(0, 0);
-}
+	int blockBitMask = getBlockBitmask(orientation);
+	int blockBitIndex = 1;
 
-void BlockData::draw(sf::RenderWindow& window)
-{
-	int blockShapeIndex = 0;
-
-	for (auto i = 0; i < block.size(); ++i)
+	for (auto i = 0; i < blockArray.size(); ++i)
 	{
-		for (auto j = 0; j < block[i].size(); ++j)
+		for (auto j = 0; j < blockArray[i].size(); ++j)
 		{
-			if (block[i][j])
+			// If blockBitMask is not empty, it should be drawn
+			blockArray[i][j] = false;
+			if ((blockBitMask & blockBitIndex) != 0)
 			{
-				auto& block = blockShape[blockShapeIndex++];
-				block.setPosition(startRenderPosition.x + (gridPosition.x + j) * config::BLOCK_SIZE, startRenderPosition.y + (gridPosition.y + i) * config::BLOCK_SIZE);
-				window.draw(block);
+				blockArray[i][j] = true;
 			}
+
+			// Move bitMask index
+			blockBitMask >>= 1;
 		}
 	}
 }
 
-void BlockData::setPosition(sf::Vector2f newPosition)
+const int BlockData::getBlockBitmask(Orientation orientation)
 {
-	startRenderPosition = newPosition;
-}
-
-const BlockArray<bool, 2>& BlockData::getBlock()
-{
-	return block;
+	int index = static_cast<int>(orientation);
+	return block[index];
 }

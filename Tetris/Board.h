@@ -6,7 +6,7 @@
 #include <array>
 
 #include "config.h";
-#include "BlockData.h";
+#include "Block.h";
 
 using namespace std;
 
@@ -17,8 +17,8 @@ class Board
 {
 	struct Tile
 	{
-		sf::RectangleShape	tileShape;
-		bool				isActive;
+		sf::Color	color;
+		bool		isActive;
 	};
 
 private:
@@ -26,7 +26,9 @@ private:
 	// Draw the board 
 	sf::Vector2f		boardPosition;
 	sf::RectangleShape	boardBg;
-	TileArray<Tile>		tileArr;
+
+	TileArray<Tile>					tileArr;
+	TileArray<sf::RectangleShape>	tileShapeArr;
 	
 	bool isTileValid(size_t  row, size_t col);
 	bool isTileInBoard(size_t  row, size_t col);
@@ -38,7 +40,8 @@ public:
 	sf::Vector2f getBoardPosition();
 	void resetBoard();
 	void setTile(size_t row, size_t col, const sf::Color& color, bool isActive = true);
-	bool isBlockValid(sf::Vector2i& blockGridPosition, BlockData& block);
+	bool isBlockValid(sf::Vector2i& blockGridPosition, Block& block);
+	bool isBlockBottom(sf::Vector2i blockGridPosition, Block& block);
 	void draw(sf::RenderWindow& window);
 };
 #endif

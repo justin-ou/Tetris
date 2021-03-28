@@ -3,6 +3,7 @@
 #include <iostream>
 #include "config.h";
 #include "Board.h";
+#include "BlockData.h";
 #include "TetrisController.h";
 
 using namespace sf;
@@ -10,13 +11,11 @@ using namespace sf;
 int main()
 {
 	RenderWindow window(sf::VideoMode(config::WINDOW_WIDTH, config::WINDOW_HEIGHT), "Tetris");
+	srand((unsigned)time(0));	
 
 	// Setup main classes for Tetris game
 	Board board;
-	TetrisController controller;
-
-	// Init
-	controller.block.setPosition(board.getBoardPosition());
+	TetrisController controller(board.getBoardPosition());	
 
 	// Prevent events from firing constantly
 	bool isKeyPressed = false;
@@ -41,7 +40,7 @@ int main()
 			if (controller.onKeyPress(board))
 			{
 				isKeyPressed = true;
-			}
+			}			
 		}		
 
 		// Game update
@@ -50,7 +49,7 @@ int main()
 		// Graphics update
 		window.clear();		
 		board.draw(window);
-		controller.drawBlock(window);		
+		controller.drawBlock(window);
 		window.display();
 	}
 

@@ -11,27 +11,19 @@ using namespace std;
 template<typename T, int size>
 using BlockArray = array < array<T, size>, size>;
 
+enum Orientation { Up, Right, Down, Left };
+
 class BlockData
 {
 private:
-	sf::Vector2f				startRenderPosition;
-	sf::Color					color;
-	BlockArray<bool, 2>			block;
-	vector<sf::RectangleShape>	blockShape;
+	// 1 int representation for each orientation
+	array<int, 4> block;
 
-public:
+	const int getBlockBitmask(Orientation orientation);
 
-	// Const variables
-	static const sf::Color DARKEN_COLOR;
-
-	sf::Vector2i gridPosition;
-
-	BlockData();
-
-	void reset();
-	void draw(sf::RenderWindow& window);
-	void setPosition(sf::Vector2f newPosition);
-	const BlockArray<bool, 2>& getBlock();
+public:	
+	BlockData(array<int, config::BLOCK_DATA_LENGTH> blockConfig);	
+	void setBlockArray(Orientation orientation, BlockArray<bool, config::BLOCK_DATA_LENGTH>& blockArray);
 };
 
 #endif

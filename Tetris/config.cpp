@@ -7,5 +7,6 @@ namespace config
 
 	// Block properties
 	extern const int BLOCK_SIZE = 30;
+	extern const int BLOCK_INNER_SIZE = 27;
 	extern const float BLOCK_FALL_DELAY = 1;
 }

@@ -26,8 +26,10 @@ Board::Board()
 			// Init rectangle shapes
 			sf::RectangleShape newRectangle(sf::Vector2f(config::BLOCK_SIZE, config::BLOCK_SIZE));
 			newRectangle.setPosition(boardPosition.x + j * config::BLOCK_SIZE, boardPosition.y + i * config::BLOCK_SIZE);
-			tileArr[i][j].tileShape = std::move(newRectangle);
+			newRectangle.setOutlineThickness(-2);
+			tileShapeArr[i][j] = std::move(newRectangle);
 			
+			// Init board data			
 			resetTile(tileArr[i][j]);
 		}
 	}
@@ -61,7 +63,9 @@ void Board::draw(sf::RenderWindow& window)
 		{
 			if (tileArr[row][col].isActive)
 			{
-				window.draw(tileArr[row][col].tileShape);
+				tileShapeArr[row][col].setFillColor(tileArr[row][col].color);
+				tileShapeArr[row][col].setOutlineColor(tileArr[row][col].color - Block::DARKEN_COLOR);
+				window.draw(tileShapeArr[row][col]);
 			}
 		}
 	}
@@ -84,16 +88,35 @@ void Board::setTile(size_t row, size_t col, const sf::Color& color, bool isActiv
 	if (!isTileInBoard(row, col)) return;
 
 	// Set the tile		
-	auto& tile = tileArr[row][col];
-	auto& tileShape = tile.tileShape;
-	tileShape.setFillColor(color);
-	tileShape.setOutlineColor(color - BlockData::DARKEN_COLOR);
-	tileShape.setOutlineThickness(-2);
+	tileArr[row][col].color = color;	
+	tileArr[row][col].isActive = isActive;
 
-	tile.isActive = isActive;
+	// Check row each time a tile is set
+	bool canClear = true;
+	for (auto i = 0; i < tileArr[row].size() && canClear; ++i)
+	{
+		if (!tileArr[row][i].isActive)
+		{
+			canClear = false;			
+		}
+	}
+
+	// If can clear this row, copy every row above it
+	if (canClear)
+	{
+		for (int currentRow = row - 1; currentRow >= 0; --currentRow)
+		{
+			tileArr[currentRow + 1] = tileArr[currentRow];
+		}
+		int colSize = (int)tileArr[0].size();
+		for (int col = 0; col < colSize; ++col)
+		{
+			tileArr[0][col].isActive = false;
+		}
+	}
 }
 
-bool Board::isBlockValid(sf::Vector2i & blockGridPosition, BlockData & block)
+bool Board::isBlockValid(sf::Vector2i& blockGridPosition, Block& block)
 {
 	// Loop through the block data and check the row/col tile
 	auto& blockArray = block.getBlock();
@@ -108,6 +131,13 @@ bool Board::isBlockValid(sf::Vector2i & blockGridPosition, BlockData & block)
 		}
 	}
 	return true;
+}
+
+bool Board::isBlockBottom(sf::Vector2i blockGridPosition, Block& block)
+{
+	// Add 1 to y-position and check block validity
+	blockGridPosition.y += 1;
+	return !isBlockValid(blockGridPosition, block);
 }
 
 void Board::resetTile(Tile & tileReference)

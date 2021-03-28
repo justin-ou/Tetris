@@ -130,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Block.cpp" />
     <ClCompile Include="BlockData.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="config.cpp" />
@@ -137,6 +138,7 @@
     <ClCompile Include="TetrisController.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Block.h" />
     <ClInclude Include="BlockData.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="config.h" />
